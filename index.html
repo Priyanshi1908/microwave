@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Retro Microwave</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <div class="scene">
+    <img src="public/background.png" alt="Kitchen background" class="background" />
+
+    <div class="microwave-container" id="microwave">
+
+      <!-- Glow visible when ON — sits behind the body window -->
+      <img src="public/glow-effect.png" alt="Glow" class="layer glow" id="glow" />
+
+      <!-- Tray spins when ON — visible through door window -->
+      <img src="public/microwave-tray.png" alt="Tray" class="layer tray" id="tray" />
+
+      <!-- Microwave body — main visual -->
+      <img src="public/microwave-body.png" alt="Microwave" class="layer body" id="body" />
+
+      <!-- Knob overlay — interactive -->
+      <img src="public/Untitled2.png" alt="Knob" class="layer knob" id="knob" />
+
+      <!-- Smoke — hidden until explosion -->
+      <img src="public/smoke.png" alt="Smoke" class="layer smoke" id="smoke" />
+
+      <!-- Explosion — replaces everything during explode -->
+      <img src="public/explosion.png" alt="Explosion" class="layer explosion" id="explosion" />
+
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

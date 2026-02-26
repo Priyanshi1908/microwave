@@ -1,40 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Retro Microwave</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
 </head>
+
 <body>
 
   <div class="scene">
-    <img src="public/background.png" alt="Kitchen background" class="background" />
+    <div class="scaler" id="scaler">
+      <img src="public/background-open.png" alt="Open window background" class="background background-open"
+        id="backgroundOpen" />
+      <img src="public/background.png" alt="Kitchen background" class="background" id="backgroundNormal" />
 
-    <div class="microwave-container" id="microwave">
+      <!-- Clickable window zone -->
+      <div class="window-trigger" id="windowTrigger"></div>
 
-      <!-- Glow visible when ON — sits behind the body window -->
-      <img src="public/glow-effect.png" alt="Glow" class="layer glow" id="glow" />
+      <!-- Animated Arrow Hint (for window) -->
+      <svg id="windowArrow" class="window-arrow" viewBox="0 0 200 120">
+        <path class="arrow-part" id="arrowTail1" d="M 180 80 L 140 70" />
+        <path class="arrow-part" id="arrowTail2" d="M 125 65 L 85 55" />
+        <path class="arrow-part" id="arrowHead" d="M 65 75 L 30 55 L 70 30" />
+      </svg>
 
-      <!-- Tray spins when ON — visible through door window -->
-      <img src="public/microwave-tray.png" alt="Tray" class="layer tray" id="tray" />
+      <div class="microwave-container" id="microwave">
 
-      <!-- Microwave body — main visual -->
-      <img src="public/microwave-body.png" alt="Microwave" class="layer body" id="body" />
+        <!-- Hints -->
+        <div class="hint knob-hint" id="knobHint">
+          <svg class="hint-bubble" viewBox="0 0 259.465 259.465">
+            <path
+              d="M216.544,9.994H42.921c-25.535,0-45.436,22.21-42.662,47.579l12.258,112.159c2.385,21.808,20.726,38.253,42.662,38.253 c7.486,0,65.908,0,76.517,0l35.642,36.216c9.988,10.153,27.357,4.854,29.913-9.212l4.91-27.004 c25.999,0,42.539-17.686,44.788-38.253l12.258-112.159C261.981,32.189,242.064,9.994,216.544,9.994z M244.294,55.943 l-12.257,112.159c-1.552,14.186-13.481,24.883-27.751,24.883h-8.385c-3.625,0-6.73,2.592-7.379,6.158l-6.03,33.163 c-0.384,2.108-2.963,2.9-4.464,1.374l-25.831-26.248c7.594-3.084,5.391-14.448-2.818-14.448c-10.983,0-84.789,0-94.2,0 c-14.269,0-26.199-10.697-27.75-24.883L15.171,55.943c-1.806-16.511,11.149-30.949,27.75-30.949h173.623 C233.153,24.994,246.099,39.44,244.294,55.943z" />
+          </svg>
+          <span class="hint-text">Click me!</span>
+        </div>
 
-      <!-- Knob overlay — interactive -->
-      <img src="public/Untitled2.png" alt="Knob" class="layer knob" id="knob" />
+        <!-- Microwave body — main visual -->
+        <img src="public/microwave-body.png" alt="Microwave" class="layer body" id="body" />
 
-      <!-- Smoke — hidden until explosion -->
-      <img src="public/smoke.png" alt="Smoke" class="layer smoke" id="smoke" />
+        <!-- Door window overlay: clips tray + glow to the glass area -->
+        <div class="door-window" id="doorWindow">
+          <div class="tray-wrapper" id="trayWrapper">
+            <img src="public/microwave-tray.png" alt="Tray" class="tray" id="tray" />
+            <div class="tray-shadow" id="trayShadow"></div>
+            <div class="tray-light" id="trayLight"></div>
+          </div>
+          <div class="inner-glow" id="innerGlow"></div>
+        </div>
 
-      <!-- Explosion — replaces everything during explode -->
-      <img src="public/explosion.png" alt="Explosion" class="layer explosion" id="explosion" />
+        <!-- Knob overlay — interactive -->
+        <img src="public/Untitled2.png" alt="Knob" class="layer knob" id="knob" />
 
+        <!-- Fire — hidden until explosion -->
+        <div class="fire-container" id="fireContainer"></div>
+
+        <!-- Smoke — hidden until explosion -->
+        <div class="smoke-container" id="smokeContainer"></div>
+
+        <!-- Explosion — replaces everything during explode -->
+        <img src="public/explosion.png" alt="Explosion" class="layer explosion" id="explosion" />
+
+      </div>
     </div>
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="script.js"></script>
 </body>
+
 </html>

@@ -2,11 +2,18 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  user-select: none;
+  -webkit-user-drag: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
   overflow: hidden;
   background: #1a1a2e;
+  cursor: url('public/cursor-64.png'), auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* ── Scene ─────────────────────────────────── */
@@ -18,6 +25,14 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+}
+
+.scaler {
+  position: relative;
+  width: max(100vw, 100vh * 1.5);
+  height: max(100vh, 100vw / 1.5);
+  flex-shrink: 0;
 }
 
 .background {
@@ -25,18 +40,41 @@ body {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: fill;
   z-index: 0;
-  image-rendering: auto;
+}
+
+.background-open {
+  opacity: 0;
+  z-index: 1;
+  /* Above normal background */
+}
+
+/* ── Interactive Trigger ───────────────────── */
+
+.window-trigger {
+  position: absolute;
+  left: 36.5%;
+  top: 6%;
+  width: 27%;
+  height: 43%;
+  z-index: 10;
+  cursor: url('public/CursorHover-64.png'), pointer;
+  /* background: rgba(255, 0, 0, 0.2); /* Uncomment for debug */
 }
 
 /* ── Microwave container ───────────────────── */
 
 .microwave-container {
-  position: relative;
-  width: 500px;
-  height: 270px;
-  z-index: 1;
+  position: absolute;
+  width: min(700px, 92vw);
+  aspect-ratio: 700 / 380;
+  height: auto;
+  left: 50%;
+  transform: translateX(-50%);
+  /* Anchor microwave feet on the counter perfectly relative to the background aspect */
+  top: 50%;
+  z-index: 10;
   will-change: transform;
 }
 
@@ -55,59 +93,269 @@ body {
   height: 100%;
   top: 0;
   left: 0;
-  z-index: 3;
+  z-index: 1;
 }
 
-/* ── Tray (behind body, visible through door) */
+/* ── Door window (clips tray + glow to glass) ── */
+/* Positioned precisely over the glass area of the body image */
+
+.door-window {
+  position: absolute;
+  left: 12%;
+  top: 25%;
+  width: 45%;
+  height: 50%;
+  clip-path: inset(0 round 6px);
+  z-index: 2;
+  pointer-events: none;
+  perspective: 800px;
+}
+
+/* ── Tray wrapper (3D rotation container) ──────── */
+
+.tray-wrapper {
+  position: absolute;
+  width: 80%;
+  bottom: 0%;
+  left: 20%;
+  transform-style: preserve-3d;
+  transform-origin: center center;
+  backface-visibility: hidden;
+}
+
+/* ── Tray image ────────────────────────────────── */
 
 .tray {
-  width: 190px;
-  top: 58%;
-  left: 14%;
-  z-index: 2;
-  transform-origin: center center;
+  display: block;
+  width: 100%;
 }
 
-/* ── Glow (behind body, visible through door) */
+/* ── Tray light/shadow overlays ────────────────── */
 
-.glow {
-  width: 240px;
-  top: 20%;
-  left: 8%;
-  z-index: 1;
+.tray-light,
+.tray-shadow {
+  position: absolute;
+  inset: 22% 5% 10% 5%;
+  /* Balanced inset to keep the ellipse smooth */
+  border-radius: 50%;
+  /* Smooth ellipse */
+  pointer-events: none;
   opacity: 0;
-  mix-blend-mode: screen;
+}
+
+.tray-light {
+  background: linear-gradient(110deg,
+      transparent 20%,
+      rgba(255, 255, 255, 0.4) 40%,
+      rgba(255, 255, 255, 0.2) 55%,
+      transparent 75%);
+  background-size: 200% 100%;
+  background-position: -100% 0;
+}
+
+.tray-shadow {
+  background: linear-gradient(75deg,
+      transparent 10%,
+      rgba(0, 0, 0, 0.5) 35%,
+      rgba(0, 0, 0, 0.75) 50%,
+      rgba(0, 0, 0, 0.5) 65%,
+      transparent 90%);
+  background-size: 200% 100%;
+  background-position: -100% 0;
+  mix-blend-mode: multiply;
+}
+
+/* ── Glow image (inside door window) ─────────── */
+
+
+
+/* ── Interior warm glow (inside door window) ─── */
+
+.inner-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+  background: radial-gradient(ellipse at center,
+      rgba(255, 220, 100, 0.8) 0%,
+      rgba(255, 180, 50, 0.5) 45%,
+      transparent 80%);
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* ── Knob (overlays the body knob area) ────── */
 
 .knob {
-  width: 62px;
-  top: 46%;
-  right: 9.5%;
-  z-index: 4;
+  width: 17.14%;
+  left: 65.7%;
+  top: 52.1%;
+  height: auto;
+  z-index: 3;
   pointer-events: all;
-  cursor: pointer;
+  cursor: url('public/CursorHover-64.png'), pointer;
   transform-origin: center center;
+}
+
+/* ── Fire ──────────────────────────────────── */
+
+.fire-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: -15%;
+  left: 15%;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.fire-particle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  will-change: transform, opacity;
+  mix-blend-mode: screen;
 }
 
 /* ── Smoke ─────────────────────────────────── */
 
-.smoke {
-  width: 320px;
-  top: -60%;
-  left: 10%;
-  z-index: 6;
+.smoke-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.smoke-particle {
+  position: absolute;
+  width: 21.42%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(12px);
+  will-change: transform, opacity;
+  mix-blend-mode: normal;
+}
+
+/* ── Hints ─────────────────────────────────── */
+
+.hint {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20.7%;
+  aspect-ratio: 1;
+  pointer-events: none;
+  z-index: 25;
   opacity: 0;
+}
+
+.hint-bubble {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: black;
+  stroke-width: 12px;
+  transform: scaleX(-1);
+  filter: drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.4));
+}
+
+.hint-text {
+  position: relative;
+  font-family: 'Caveat', cursive;
+  font-size: clamp(14px, 4.5vw, 30px);
+  color: black;
+  margin-top: -12%;
+  /* Center within bubble body */
+  font-weight: 700;
+}
+
+.knob-hint {
+  left: 80%;
+  top: 30%;
+  transform: rotate(20deg);
+}
+
+.window-hint {
+  left: 50%;
+  top: 25%;
+  transform: translateX(-50%) rotate(20deg);
+}
+
+/* ── Arrow Hint ────────────────────────────── */
+
+.window-arrow {
+  position: absolute;
+  width: 12%;
+  height: auto;
+  left: 58%;
+  /* Moved further right to clear the window/handle area */
+  top: 20%;
+  z-index: 25;
+  pointer-events: none;
+  filter: drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.3));
+}
+
+.arrow-part {
+  fill: none;
+  stroke: black;
+  stroke-width: 10px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+  /* Hidden initially, shown via GSAP sequence */
+}
+
+#arrowHead {
+  stroke-width: 16px;
 }
 
 /* ── Explosion ─────────────────────────────── */
 
 .explosion {
-  width: 110%;
+  width: 100%;
   height: auto;
-  top: -20%;
-  left: -5%;
-  z-index: 5;
+  bottom: -8%;
+  left: 0;
+  z-index: 4;
   opacity: 0;
+}
+
+/* ── Sprinkler System ───────────────────────── */
+
+.sprinkler-system {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 15;
+}
+
+.sprinkler-nozzle {
+  position: absolute;
+  width: 40px;
+  height: 12px;
+  background: linear-gradient(to bottom, #d1d1d1, #7a7a7a);
+  border-radius: 6px;
+  left: 50%;
+  top: -30px;
+  /* Hidden initially */
+  transform: rotate(60deg);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.water-particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: radial-gradient(circle, rgba(173, 216, 230, 0.8) 0%, rgba(135, 206, 250, 0.4) 100%);
+  border-radius: 50%;
+  filter: blur(1px);
+  will-change: transform, opacity;
 }
